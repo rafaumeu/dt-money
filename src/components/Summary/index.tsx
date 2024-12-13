@@ -5,7 +5,7 @@ import { SummaryCard, SummaryContainer } from './styles'
 
 export function Summary() {
   const summary = UseSummary()
-  return(
+  return (
     <SummaryContainer>
       <SummaryCard>
         <header>
@@ -24,7 +24,7 @@ export function Summary() {
       <SummaryCard variant="green">
         <header>
           <p>Total</p>
-          <CurrencyDollar size={32} color={'#fff'}/>
+          <CurrencyDollar size={32} color={'#fff'} />
         </header>
         <strong>{priceFormatter.format(summary.total)}</strong>
       </SummaryCard>
