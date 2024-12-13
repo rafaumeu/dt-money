@@ -22,10 +22,15 @@ const newTransactionFormSchema = zod.object({
 
 type NewTransactionFormInput = zod.infer<typeof newTransactionFormSchema>
 export function NewTransactionModal() {
-  const { register, handleSubmit, control, reset } =
-    useForm<NewTransactionFormInput>({
-      resolver: zodResolver(newTransactionFormSchema),
-    })
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { isValid },
+  } = useForm<NewTransactionFormInput>({
+    resolver: zodResolver(newTransactionFormSchema),
+  })
   const createTransaction = useContextSelector(
     TransactionsContext,
     (context) => context.createTransaction,
@@ -88,7 +93,7 @@ export function NewTransactionModal() {
               )
             }}
           />
-          <button type="submit" disabled>
+          <button type="submit" disabled={!isValid}>
             Cadastrar
           </button>
         </form>
