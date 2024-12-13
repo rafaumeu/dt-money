@@ -1,5 +1,6 @@
 import { useContextSelector } from 'use-context-selector'
 import { Header } from '../../components/Header'
+import { Pagination } from '../../components/Pagination'
 import { Summary } from '../../components/Summary'
 import { TransactionsContext } from '../../contexts/TransactionContext'
 import { dateFormatter, priceFormatter } from '../../utils/formatter'
@@ -11,10 +12,11 @@ import {
 } from './styles'
 
 export function Transactions() {
-  const transactions = useContextSelector(
-    TransactionsContext,
-    (context) => context.transactions,
-  )
+  const { transactions, totalTransactions, fetchTransactions } =
+    useContextSelector(TransactionsContext, (context) => context)
+  const handlePageChange = (page: number) => {
+    fetchTransactions(undefined, page)
+  }
   return (
     <div>
       <Header />
@@ -42,6 +44,12 @@ export function Transactions() {
             })}
           </tbody>
         </TransactionsTable>
+        <Pagination
+          currentPage={1}
+          totalItems={totalTransactions}
+          itemsPerPage={10}
+          onPageChange={handlePageChange}
+        />
       </TransactionsContainer>
     </div>
   )
