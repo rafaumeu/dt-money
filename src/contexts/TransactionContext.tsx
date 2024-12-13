@@ -19,8 +19,8 @@ interface CreateTransactionInput {
 }
 interface TransactionContextType {
   transactions: Transaction[]
-  totalTransactions: number
   currentPage: number
+  totalTransactions: number
   fetchTransactions: (query?: string, page?: number) => Promise<void>
   createTransaction: (data: CreateTransactionInput) => Promise<void>
 }

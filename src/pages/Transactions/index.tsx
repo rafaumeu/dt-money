@@ -12,7 +12,7 @@ import {
 } from './styles'
 
 export function Transactions() {
-  const { transactions, totalTransactions, fetchTransactions } =
+  const { transactions, totalTransactions, fetchTransactions, currentPage } =
     useContextSelector(TransactionsContext, (context) => context)
   const handlePageChange = (page: number) => {
     fetchTransactions(undefined, page)
@@ -45,7 +45,7 @@ export function Transactions() {
           </tbody>
         </TransactionsTable>
         <Pagination
-          currentPage={1}
+          currentPage={currentPage}
           totalItems={totalTransactions}
           itemsPerPage={10}
           onPageChange={handlePageChange}
