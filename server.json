@@ -6,6 +6,22 @@
       "position": "PROMOTOR",
       "supervisor": "LUIS FERNANDO"
     },
-    "dailyRecords": []
+    "dailyRecords": [
+      {
+        "id": "0.29882667901860516",
+        "date": "2025-01-15",
+        "day": "terça-feira",
+        "itinerary": "Frei Galvão - Rodoviaria - Rodoviária - Frei Galvão",
+        "transports": [
+          {
+            "id": "0.0250021464200203",
+            "type": "municipal",
+            "quantity": 4,
+            "unitPrice": 4.8,
+            "itinerary": "Frei Galvão - Rodoviaria - Rodoviária - Frei Galvão"
+          }
+        ]
+      }
+    ]
   }
 }

@@ -38,12 +38,20 @@ interface NewTransportData {
   unitPrice: number
 }
 
+interface Transaction {
+  id: string
+  type: string
+  price: number
+  // Add other properties as needed
+}
+
 interface TransactionContextType {
   report: Report | null
   setReport: React.Dispatch<React.SetStateAction<Report | null>> // Added setReport
   fetchReport: () => Promise<void>
   createTransport: (data: NewTransportData) => Promise<void>
   fetchTransactions: (query: string) => Promise<void>
+  transactions: Transaction[] // Added transactions property
 }
 
 export const TransactionsContext = createContext({} as TransactionContextType)
@@ -54,6 +62,7 @@ interface TransactionsProviderProps {
 
 export function TransactionsProvider({ children }: TransactionsProviderProps) {
   const [report, setReport] = useState<Report | null>(null)
+  const [transactions, setTransactions] = useState<Transaction[]>([]) // Initialize transactions state
 
   const fetchReport = useCallback(async () => {
     const response = await api.get('/report')
@@ -82,13 +91,14 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
           itinerary, // Include itinerary here
         }
 
-        const updatedDailyRecords = report.dailyRecords.map((record) =>
-          record.date === date
-            ? {
-                ...record,
-                transports: [...record.transports, newTransport],
-              }
-            : record,
+        const updatedDailyRecords = report?.dailyRecords.map(
+          (record: DailyRecord) =>
+            record.date === date
+              ? {
+                  ...record,
+                  transports: [...record.transports, newTransport],
+                }
+              : record,
         )
 
         // Atualiza o estado do relatório
@@ -96,7 +106,7 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
           if (prevReport) {
             return {
               ...prevReport,
-              dailyRecords: updatedDailyRecords,
+              dailyRecords: updatedDailyRecords || [],
             }
           }
           return prevReport
@@ -150,25 +160,8 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
   )
 
   const fetchTransactions = useCallback(async (query: string) => {
-    const response = await api.get('/report')
-    const data = response.data
-    const filteredDailyRecords = data.dailyRecords.filter((dailyRecord) => {
-      return (
-        dailyRecord.itinerary.toLowerCase().includes(query.toLowerCase()) ||
-        dailyRecord.date.toLowerCase().includes(query.toLowerCase()) ||
-        dailyRecord.transports.some((transport) => {
-          return (
-            transport.type.toLowerCase().includes(query.toLowerCase()) ||
-            transport.quantity.toString().includes(query) ||
-            transport.unitPrice.toString().includes(query)
-          )
-        })
-      )
-    })
-    setReport({
-      ...data,
-      dailyRecords: filteredDailyRecords,
-    })
+    const response = await api.get(`/transactions?query=${query}`) // Adjust the endpoint as necessary
+    setTransactions(response.data)
   }, [])
 
   useEffect(() => {
@@ -183,6 +176,7 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
         createTransport,
         fetchReport,
         fetchTransactions,
+        transactions, // Add this line
       }}
     >
       {children}

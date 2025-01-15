@@ -73,18 +73,19 @@ export function Transactions() {
       itinerary: '',
       type: 'municipal',
       quantity: 1,
-      unitPrice: '',
+      unitPrice: 0,
     },
   })
 
-  const handleEditTransport = (transport: Transport, dailyRecord: any) => {
-    console.log('Transporte que está sendo editado:', transport)
-
+  const handleEditTransport = (
+    transport: Transport,
+    dailyRecord: { itinerary: string },
+  ) => {
     reset({
       itinerary: dailyRecord.itinerary,
-      type: transport.type,
+      type: transport.type as 'municipal' | 'intermunicipal',
       quantity: transport.quantity,
-      unitPrice: transport.unitPrice.toString().replace('.', ','), // Converte para formato brasileiro
+      unitPrice: transport.unitPrice, // Set as a number here
     })
 
     setIsEditing(true)
@@ -102,10 +103,20 @@ export function Transactions() {
       }))
 
       if (updatedDailyRecords) {
-        setReport({
-          ...report,
-          dailyRecords: updatedDailyRecords,
-        })
+        if (report) {
+          setReport({
+            ...report,
+            dailyRecords: updatedDailyRecords,
+            employee: report.employee ?? {
+              name: '',
+              code: '',
+              position: '',
+              supervisor: '',
+            },
+            month: report.month ?? '',
+            year: report.year ?? new Date().getFullYear(),
+          })
+        }
 
         // Fazer requisição para o servidor para atualizar o arquivo server.json
         api.patch('/report', {
@@ -133,14 +144,21 @@ export function Transactions() {
 
       if (updatedDailyRecords) {
         try {
-          await api.patch('/report', {
-            dailyRecords: updatedDailyRecords,
+          setReport((prevReport) => {
+            if (!prevReport) return prevReport
+            return {
+              ...prevReport,
+              dailyRecords: updatedDailyRecords,
+              employee: prevReport.employee ?? {
+                name: '',
+                code: '',
+                position: '',
+                supervisor: '',
+              },
+              month: prevReport.month ?? '',
+              year: prevReport.year ?? new Date().getFullYear(),
+            }
           })
-
-          setReport((prevReport) => ({
-            ...prevReport,
-            dailyRecords: updatedDailyRecords,
-          }))
 
           setIsEditing(false)
           setEditingTransport(null)

@@ -38,7 +38,6 @@ interface NewTransactionModalProps {
 }
 
 export function NewTransactionModal({
-  open,
   onOpenChange,
 }: NewTransactionModalProps) {
   const {
