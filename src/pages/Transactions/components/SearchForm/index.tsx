@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MagnifyingGlass } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { useContextSelector } from 'use-context-selector'
 import * as zod from 'zod'
@@ -11,6 +10,7 @@ const searchFormSchema = zod.object({
 })
 
 type SearchFormInputs = zod.infer<typeof searchFormSchema>
+
 export function SearchForm() {
   const fetchTransactions = useContextSelector(
     TransactionsContext,
@@ -27,8 +27,9 @@ export function SearchForm() {
 
   async function handleSearchTransactions(data: SearchFormInputs) {
     console.log(data)
-    await fetchTransactions(data.query)
+    await fetchTransactions(data.query.trim()) // Adicione o trim() para remover espaços em branco
   }
+
   return (
     <SearchFormContainer onSubmit={handleSubmit(handleSearchTransactions)}>
       <input
@@ -37,7 +38,6 @@ export function SearchForm() {
         {...register('query')}
       />
       <button type="submit" disabled={isSubmitting}>
-        <MagnifyingGlass size={20} />
         Buscar
       </button>
     </SearchFormContainer>

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
-import { ArrowCircleDown, ArrowCircleUp, X } from 'phosphor-react'
+import { Bus, X } from 'phosphor-react'
 import { Controller, useForm } from 'react-hook-form'
 import { useContextSelector } from 'use-context-selector'
 import * as zod from 'zod'
@@ -13,64 +13,87 @@ import {
   TransactionTypeButton,
 } from './styles'
 
-const newTransactionFormSchema = zod.object({
-  description: zod.string(),
-  price: zod.number(),
-  category: zod.string(),
-  type: zod.enum(['income', 'outcome']),
+const newTransportFormSchema = zod.object({
+  date: zod.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida'),
+  itinerary: zod.string().min(1, 'Itinerário é obrigatório'),
+  type: zod.enum(['municipal', 'intermunicipal']),
+  quantity: zod
+    .number()
+    .min(1, 'Quantidade mínima é 1')
+    .max(100, 'Quantidade máxima é 100'),
+  unitPrice: zod
+    .string()
+    .regex(
+      /^\d+(,\d{1,2})?$/,
+      'Preço unitário deve ser um número válido (ex: 10,99)',
+    )
+    .transform((value) => parseFloat(value.replace(',', '.'))),
 })
 
-type NewTransactionFormInput = zod.infer<typeof newTransactionFormSchema>
-export function NewTransactionModal() {
+type NewTransportFormInput = zod.infer<typeof newTransportFormSchema>
+
+interface NewTransactionModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function NewTransactionModal({
+  open,
+  onOpenChange,
+}: NewTransactionModalProps) {
   const {
     register,
     handleSubmit,
     control,
     reset,
     formState: { isValid },
-  } = useForm<NewTransactionFormInput>({
-    resolver: zodResolver(newTransactionFormSchema),
+  } = useForm<NewTransportFormInput>({
+    resolver: zodResolver(newTransportFormSchema),
   })
-  const createTransaction = useContextSelector(
+
+  const createTransport = useContextSelector(
     TransactionsContext,
-    (context) => context.createTransaction,
+    (context) => context.createTransport,
   )
-  async function handleCreateNewTransaction(data: NewTransactionFormInput) {
-    const { description, price, category, type } = data
-    createTransaction({
-      description,
-      price,
-      category,
-      type,
-    })
-    reset()
+
+  async function handleCreateNewTransport(data: NewTransportFormInput) {
+    try {
+      await createTransport({
+        date: data.date,
+        itinerary: data.itinerary,
+        type: data.type,
+        quantity: data.quantity,
+        unitPrice: data.unitPrice,
+      })
+
+      reset()
+      onOpenChange(false) // Close the modal after successful submission
+    } catch (error) {
+      console.error('Error creating transport:', error)
+      alert('Erro ao criar transporte. Tente novamente.')
+    }
   }
+
   return (
     <Dialog.Portal>
       <Overlay />
       <Content>
-        <CloseButton>
+        <CloseButton onClick={() => onOpenChange(false)}>
           <X size={24} />
         </CloseButton>
         <Dialog.Title>Nova Transação</Dialog.Title>
-        <form onSubmit={handleSubmit(handleCreateNewTransaction)}>
+        <form onSubmit={handleSubmit(handleCreateNewTransport)}>
           <input
-            type="text"
-            placeholder="Descrição"
+            type="date"
+            placeholder="Data"
             required
-            {...register('description')}
-          />
-          <input
-            type="number"
-            placeholder="Preço"
-            required
-            {...register('price', { valueAsNumber: true })}
+            {...register('date')}
           />
           <input
             type="text"
-            placeholder="Categoria"
+            placeholder="Itinerário"
             required
-            {...register('category')}
+            {...register('itinerary')}
           />
           <Controller
             control={control}
@@ -81,17 +104,37 @@ export function NewTransactionModal() {
                   onValueChange={field.onChange}
                   value={field.value}
                 >
-                  <TransactionTypeButton value="income" variant="income">
-                    <ArrowCircleUp size={24} />
-                    Entrada
+                  <TransactionTypeButton
+                    value="municipal"
+                    $variant="municipal"
+                    $isActive={field.value === 'municipal'}
+                  >
+                    <Bus size={24} />
+                    Municipal
                   </TransactionTypeButton>
-                  <TransactionTypeButton value="outcome" variant="outcome">
-                    <ArrowCircleDown size={24} />
-                    Saída
+                  <TransactionTypeButton
+                    value="intermunicipal"
+                    $variant="intermunicipal"
+                    $isActive={field.value === 'intermunicipal'}
+                  >
+                    <Bus size={24} />
+                    Intermunicipal
                   </TransactionTypeButton>
                 </TransactionType>
               )
             }}
+          />
+          <input
+            type="number"
+            placeholder="Quantidade"
+            required
+            {...register('quantity', { valueAsNumber: true })}
+          />
+          <input
+            type="text"
+            placeholder="Preço Unitário"
+            required
+            {...register('unitPrice')}
           />
           <button type="submit" disabled={!isValid}>
             Cadastrar
