@@ -41,6 +41,8 @@
   <img src="https://img.shields.io/badge/status-in%20development-yellow?style=for-the-badge" alt="Project Status" />
 </p>
 
+**[Live Demo →](https://dt-money-sandy-three.vercel.app)**
+
 DT Money is a financial control application developed during Rocketseat's Ignite bootcamp. The project allows users to manage their financial transactions, providing features like registering, listing, searching, and summarizing income and expenses.
 
 ## 🎯 Features
