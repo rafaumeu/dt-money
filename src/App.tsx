@@ -1,4 +1,5 @@
 import { ThemeProvider } from 'styled-components'
+import { Footer } from './components/Footer'
 import { TransactionsProvider } from './contexts/TransactionContext'
 import { Transactions } from './pages/Transactions'
 import { GlobalStyle } from './styles/global'
@@ -10,6 +11,7 @@ export function App() {
       <GlobalStyle />
       <TransactionsProvider>
         <Transactions />
+        <Footer />
       </TransactionsProvider>
     </ThemeProvider>
   )
