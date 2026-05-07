@@ -4,6 +4,12 @@ import userEvent from '@testing-library/user-event'
 import { ThemeProvider } from 'styled-components'
 import { defaultTheme } from '../../styles/themes/default'
 
+// --- Footer Component ---
+import { Footer } from '../../components/Footer'
+
+// --- Pagination Component ---
+import { Pagination } from '../../components/Pagination'
+
 // Mock react-router-dom to avoid BrowserRouter issues
 vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
@@ -15,9 +21,6 @@ function renderWithTheme(ui: React.ReactElement) {
   return render(<ThemeProvider theme={defaultTheme}>{ui}</ThemeProvider>)
 }
 
-// --- Footer Component ---
-import { Footer } from '../../components/Footer'
-
 describe('Footer component', () => {
   it('should render the author name', () => {
     renderWithTheme(<Footer />)
@@ -28,14 +31,20 @@ describe('Footer component', () => {
     renderWithTheme(<Footer />)
     const githubLink = screen.getByText('GitHub')
     expect(githubLink).toBeInTheDocument()
-    expect(githubLink.closest('a')).toHaveAttribute('href', 'https://github.com/rafaumeu/dt-money')
+    expect(githubLink.closest('a')).toHaveAttribute(
+      'href',
+      'https://github.com/rafaumeu/dt-money',
+    )
   })
 
   it('should render the Portfolio link', () => {
     renderWithTheme(<Footer />)
     const portfolioLink = screen.getByText('Portfolio')
     expect(portfolioLink).toBeInTheDocument()
-    expect(portfolioLink.closest('a')).toHaveAttribute('href', 'https://portfoliodev-blush-pi.vercel.app')
+    expect(portfolioLink.closest('a')).toHaveAttribute(
+      'href',
+      'https://portfoliodev-blush-pi.vercel.app',
+    )
   })
 
   it('should render links with target="_blank" and rel="noopener noreferrer"', () => {
@@ -48,13 +57,15 @@ describe('Footer component', () => {
   })
 })
 
-// --- Pagination Component ---
-import { Pagination } from '../../components/Pagination'
-
 describe('Pagination component', () => {
   it('should render correct number of page buttons', () => {
     renderWithTheme(
-      <Pagination currentPage={1} totalItems={30} itemsPerPage={10} onPageChange={() => {}} />,
+      <Pagination
+        currentPage={1}
+        totalItems={30}
+        itemsPerPage={10}
+        onPageChange={() => {}}
+      />,
     )
     const buttons = screen.getAllByRole('button')
     expect(buttons).toHaveLength(3) // 30 items / 10 per page = 3 pages
@@ -62,7 +73,12 @@ describe('Pagination component', () => {
 
   it('should render a single page when items fit in one page', () => {
     renderWithTheme(
-      <Pagination currentPage={1} totalItems={5} itemsPerPage={10} onPageChange={() => {}} />,
+      <Pagination
+        currentPage={1}
+        totalItems={5}
+        itemsPerPage={10}
+        onPageChange={() => {}}
+      />,
     )
     const buttons = screen.getAllByRole('button')
     expect(buttons).toHaveLength(1)
@@ -71,7 +87,12 @@ describe('Pagination component', () => {
 
   it('should render correct page numbers', () => {
     renderWithTheme(
-      <Pagination currentPage={1} totalItems={25} itemsPerPage={10} onPageChange={() => {}} />,
+      <Pagination
+        currentPage={1}
+        totalItems={25}
+        itemsPerPage={10}
+        onPageChange={() => {}}
+      />,
     )
     expect(screen.getByText('1')).toBeInTheDocument()
     expect(screen.getByText('2')).toBeInTheDocument()
@@ -82,7 +103,12 @@ describe('Pagination component', () => {
     const user = userEvent.setup()
     const onPageChange = vi.fn()
     renderWithTheme(
-      <Pagination currentPage={1} totalItems={20} itemsPerPage={10} onPageChange={onPageChange} />,
+      <Pagination
+        currentPage={1}
+        totalItems={20}
+        itemsPerPage={10}
+        onPageChange={onPageChange}
+      />,
     )
     await user.click(screen.getByText('2'))
     expect(onPageChange).toHaveBeenCalledWith(2)
@@ -90,7 +116,12 @@ describe('Pagination component', () => {
 
   it('should handle zero items gracefully', () => {
     renderWithTheme(
-      <Pagination currentPage={1} totalItems={0} itemsPerPage={10} onPageChange={() => {}} />,
+      <Pagination
+        currentPage={1}
+        totalItems={0}
+        itemsPerPage={10}
+        onPageChange={() => {}}
+      />,
     )
     // Math.ceil(0/10) = 0, so the loop generates pages 1..0 = no pages
     const buttons = screen.queryAllByRole('button')
