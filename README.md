@@ -1,4 +1,4 @@
-     1|<div align="center">
+1|<div align="center">
      2|  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=FFCA28&height=150&section=header&text=DT%20Money&fontSize=35&fontColor=fff&animation=fadeIn&fontAlignY=35&desc=Personal%20Finance%20Dashboard&descSize=16&descAlignY=52"/>
      3|</div>
      4|
